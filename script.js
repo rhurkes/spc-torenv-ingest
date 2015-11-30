@@ -1,56 +1,46 @@
-jQuery(function($) {
-  var $bodyEl = $('body'),
-      $sidedrawerEl = $('#sidedrawer');
-  
-  
-  // ==========================================================================
-  // Toggle Sidedrawer
-  // ==========================================================================
-  function showSidedrawer() {
-    // show overlay
-    var options = {
-      onclose: function() {
-        $sidedrawerEl
-          .removeClass('active')
-          .appendTo(document.body);
-      }
-    };
-    
-    var $overlayEl = $(mui.overlay('on', options));
-    
-    // show element
-    $sidedrawerEl.appendTo($overlayEl);
-    setTimeout(function() {
-      $sidedrawerEl.addClass('active');
-    }, 20);
+var peekabooConfig = {
+  'header': {
+    'mobile': 72,
+    'desktop-sm': 72,
+    'default': 192
+  },
+  'header-wrapper': {
+    'mobile': 28,
+    'desktop-sm': 28,
+    'default': 82
   }
-  
-  
-  function hideSidedrawer() {
-    $bodyEl.toggleClass('hide-sidedrawer');
+};
+
+var display;
+
+var defineDisplay = function() {
+  console.log('defineDisplay');
+  display = 'default';
+};
+
+/* EVENTS */
+window.addEventListener('resize', function() {
+  defineDisplay();
+});
+
+window.addEventListener('scroll', function() {
+  console.log(window.scrollY);
+});
+
+function ready(fn) {
+  if (document.readyState !== 'loading') {
+    fn();
+  } else {
+    document.addEventListener('DOMContentLoaded', fn);
   }
-  
-  
-  $('.js-show-sidedrawer').on('click', showSidedrawer);
-  $('.js-hide-sidedrawer').on('click', hideSidedrawer);
-  
-  
-  // ==========================================================================
-  // Animate menu
-  // ==========================================================================
-  var $titleEls = $('strong', $sidedrawerEl);
-  
-  $titleEls
-    .next()
-    .hide();
-  
-  $titleEls.on('click', function() {
-    $(this).next().slideToggle(200);
-  });
+}
+
+ready(function() {
+  defineDisplay();
 });
 
 // Chart stuff
-google.load('visualization', '1.1', {packages: ['scatter']});
+google.load('visualization', '1.1', {packages: ['line']});
       google.setOnLoadCallback(drawChart);
       function drawChart() {
         var fullData = [
@@ -86,8 +76,9 @@ google.load('visualization', '1.1', {packages: ['scatter']});
 
         var lclOptions = {
           chart: { title: 'Median Lifted Condensation Level vs Elevation @ Grid Row 58' },
-          width: 900,
+          width: 700,
           height: 500,
+          pointSize: 20,
           series: {
             0: {axis: 'Elevation'},
             1: {axis: 'LCL'}
@@ -100,83 +91,6 @@ google.load('visualization', '1.1', {packages: ['scatter']});
           }
         };
 
-        var chart = new google.charts.Scatter(lclChart);
+        var chart = new google.charts.Line(lclChart);
         chart.draw(lclData, lclOptions);
-  }
-
-// Map stuff
-var map;
-  function initMap() {
-    map = new google.maps.Map(document.getElementById('map'), {
-      center: {lat: 40, lng: -100},
-      zoom: 6,
-      mapTypeId: google.maps.MapTypeId.TERRAIN
-    });
-
-    var top = 40.65;
-    var bottom = 39.95;
-    
-    var zone1 = [
-    {lat: top, lng: -91.31},
-    {lat: bottom, lng: -91.31},
-    {lat: bottom, lng: -93.11},
-    {lat: top, lng: -93.11}
-    ];
-    var zone1poly = new google.maps.Polygon({
-      paths: zone1,
-      strokeColor: 'green',
-      strokeOpacity: 0.3,
-      strokeWeight: 2,
-      fillColor: 'green',
-      fillOpacity: 0.2
-    });
-    zone1poly.setMap(map);
-
-    var zone2 = [
-    {lat: top, lng: -93.11},
-    {lat: bottom, lng: -93.11},
-    {lat: bottom, lng: -97.72},
-    {lat: top, lng: -97.72}
-    ];
-    var zone2poly = new google.maps.Polygon({
-      paths: zone2,
-      strokeColor: 'blue',
-      strokeOpacity: 0.3,
-      strokeWeight: 2,
-      fillColor: 'blue',
-      fillOpacity: 0.2
-    });
-    zone2poly.setMap(map);
-
-    var zone3 = [
-    {lat: top, lng: -97.72},
-    {lat: bottom, lng: -97.72},
-    {lat: bottom, lng: -99.69},
-    {lat: top, lng: -99.69}
-    ];
-    var zone3poly = new google.maps.Polygon({
-      paths: zone3,
-      strokeColor: 'red',
-      strokeOpacity: 0.3,
-      strokeWeight: 2,
-      fillColor: 'red',
-      fillOpacity: 0.2
-    });
-    zone3poly.setMap(map);
-
-    var zone4 = [
-    {lat: top, lng: -99.69},
-    {lat: bottom, lng: -99.69},
-    {lat: bottom, lng: -105.14},
-    {lat: top, lng: -105.14}
-    ];
-    var zone4poly = new google.maps.Polygon({
-      paths: zone4,
-      strokeColor: 'orange',
-      strokeOpacity: 0.3,
-      strokeWeight: 2,
-      fillColor: 'orange',
-      fillOpacity: 0.2
-    });
-    zone4poly.setMap(map);
   }
