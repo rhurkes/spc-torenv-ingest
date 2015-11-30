@@ -1,0 +1,55 @@
+It's fairly well known that tornadoes occur throughout much of the central and eastern United States, as evidenced by this FEMA graphic. In part due to high profile movies such as Twister, the term "Tornado Alley" has established itself as a colloqualism. However, speaking from a meteorological perspective, there isn't a rigid definition for the bounds of Tornado Alley, and there are arguments for the existence of multiple tornado alleys such as Dixie Alley in the southeast US. Regardless of any of that, professional and amateur meteorologists agree that the central US from Mexico to Canada has a high number of tornadic events in relatively similar environments. "Relatively similar" has helped create some general guidelines for parameters favorable for tornadoes:
+
+
+One of the easiest parameters to focus on when first learning about convective meteorology is the surface dewpoint, and a good rule of thumb is that you need at least 60 degree F dewpoints to get a tornadic storm.
+
+That "relatively similar environments" is good enough for a media narrative or explaining severe weather to the general public, but anyone that has witnessed tornadoes in both Colorado on the western edge of Tornado Alley, and Missouri on the eastern edge, has noticed that the environments can differ quite a bit. Over the years, some of these guidelines were ammended by the weather community with other guidelines, such as:
+
+- Surface dewpoints can be lower in upslope conditions
+- LCLs can be higher in upslope conditions
+- Instability can be lower in upslope conditions
+- Higher shear can compensate for lower instability in Dixie Alley
+
+For many years, these guidelines were passed around the weather community with anecdotal evidence supporting them, ie. "I saw a tornado outside of Denver and the dews were only 53". While not completely inaccurate, these guidelines were definitely imprecise. If you need 60 dews in Salina, and 50 dews in Denver - do you need 55 dews in Hays, KS halfway between the two cities?
+
+Thankfully, in the last few years John Hart at the Storm Prediction Center compiled a lot of storm environment data all across the US, and made a web page that allows for easy browsing. With grid points spaced roughly every 1 degree, this data is granular enough to allow for some analysis to be done. Unfortunately, while the SPC makes some commonly-used data available, there isn't a huge demand for the tornado environment data, so I needed to fall back to parsing it the hard way. Eventually, I'll put the source code for this up, but the basic process is:
+
+1) retrieve all grid point images
+2) Grab lat/lon values and create a map for grid X/Y values
+3) OCR the event count (optional)
+4) Inspect the pixel values to interpolate box/whisker data points
+5) Query the USGS web service with lat/lon to get elevation data - http://nationalmap.gov/epqs/pqs.php?x=-91.77&y=40.31&units=Meters&output=xml
+6) Throw all this data into a Postgres database
+7) Create a simple API to expose these values in bulk
+
+A quick sidenote, yes interpolation is not optimal! In this case, it's not too detrimental though. The MLCAPE values for example, are on a scale of 500 J/Kg across either 31 or 32 pixels, so our margin of error ends up being ~16 J/Kg - small enough to be statistically insignificant for our purposes.
+
+For all the grunt work above, I ended up using Python which made it fairly trivial. While I work on getting all the data stored and exposing it in a useful manner, I wanted to take a single grid row and see if the data helps refine any guidelines. I picked grid row #58 stretching from the Colorado Front Range to the Mississippi River for a few reasons:
+
+- latitude is somewhat central to Tornado Alley
+- follows I-80 closely to minimize population bias issues
+- no major geographic features interrupting the row like the Buffalo Ridge, Badlands, etc.
+
+For this data, I've been playing with a few different charting libraries before settling on one. I've found Google's charting library to be a good blend of functionality and ease of use. So what does the data look like?
+
+Elevation and LCL are fairly linear, which makes comparisons easy. This isn't good enough for modeling convective systems on super computers, but to answer the general question of "How does elevation affect LCL height?" it's great.
+
+Elevation linear regression
+y = 102.292 * x- 9366.869
+r^2 = 0.923
+
+LCL linear regression
+y = 62.905 * x -4981.19
+r^2 = 0.964
+
+It's 78 kilometers between grid points/data points, so for every 78km we travel west our general rules are:
+At a base LCL height of ~900m, and a base elevation of ~200m
+- elevation increases by 102 meters
+- LCL height for tornadic storms increases by 62 meters
+Let's standardize on 100km and bump everything by ~28% (which we can, since these are linear relationships):
+- elevation increases by ~130m
+- LCL height increases by ~80m, or 4/5 of the distance
+
+http://www.nhc.noaa.gov/gccalc.shtml
+
+

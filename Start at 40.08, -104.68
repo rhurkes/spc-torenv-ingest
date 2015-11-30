@@ -1,0 +1,9 @@
+Start at 40.08, -104.68
+40.12, -103.76
+40.17, -102.84
+20.21, -101.92
+
+Grid X spacing is .92 degrees
+
+Elevation linear regression
+y = 102.292 * x- 9366.869r^2 = 0.923

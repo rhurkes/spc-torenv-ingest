@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script type="text/javascript" src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1.1','packages':['corechart']}]}"></script>
+</head>
+<body>
+	<div id="chart_div" style="width: 900px; height: 500px;"></div>
+	<script>
+   google.setOnLoadCallback(drawChart);
+
+   function drawChart() {
+    var fullData = [
+    [91.77, 207.893265, 1452, 880, 44],
+    [92.69, 233.873962, 1509, 880, 45],
+    [93.62, 272.229706, 1767, 857, 47],
+    [94.54, 296.81308, 2043, 925, 45],
+    [95.46, 312.589355, 1920, 955, 47],
+    [96.39, 418.118896, 1944, 1054, 52],
+    [97.31, 466.61264, 1920, 1193, 50],
+    [98.23, 558.502014, 2426, 1244, 48],
+    [99.15, 675.569153, 2425, 1220, 45],
+    [100.08, 688.673462, 1895, 1310, 43],
+    [101, 866.322693, 1351, 1317, 44],
+    [101.92, 1061.252075, 1102, 1397, 42],
+    [102.84, 1291.158813, 1069, 1555, 43],
+    [103.76, 1366.450073, 907, 1591, 35],
+    [104.68, 1502.562256, 865, 1591, 32]
+    ];
+
+    var paramToShowIndex = 3;
+    var newData = [['Latitude', 'Data']];
+    for (var i = 0; i < fullData.length; i++) {
+      var dr = fullData[i];
+      var row = [dr[0], dr[1]];
+      newData.push(row);
+    }
+
+    var data = google.visualization.arrayToDataTable(newData);
+
+    var options = {
+      title: 'Elevation Linear Regression',
+      trendlines: {
+        0: {
+          type: 'linear',
+          showR2: true,
+          visibleInLegend: true
+        }
+      },
+      hAxis: {title: 'Longitude'},
+      vAxis: {title: 'Elevation'}
+    };
+
+    var chart = new google.visualization.ScatterChart(document.getElementById('chart_div'));
+
+    chart.draw(data, options);
+  }
+</script>
+</body>
+</html>

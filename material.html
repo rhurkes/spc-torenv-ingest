@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<!--<script type="text/javascript" src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1.1','packages':['line']}]}"></script>-->
+	<script type="text/javascript" src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1.1','packages':['scatter']}]}"></script>
+	<style type="text/css">
+		html, body { height: 100%; margin: 0; padding: 0; }
+		#map {
+			height: 500px;
+			width: 900px;
+		}
+	</style>
+	<style>
+		#chart_wrapper {
+			position: relative;
+		}
+	/*#chart_div svg g rect {
+		display: none;
+	}*/
+	.zone1 {
+		position: absolute;
+		top: 40px;
+		bottom: 30px;
+		left: 60px;
+		opacity: 0.1;
+		background-color: green;
+		width: 131px;
+	}
+	.zone2 {
+		position: absolute;
+		top: 40px;
+		bottom: 30px;
+		left: 191px;
+		opacity: 0.1;
+		background-color: blue;
+		width: 176px;
+	}
+	.zone3 {
+		position: absolute;
+		top: 40px;
+		bottom: 30px;
+		left: 367px;
+		opacity: 0.1;
+		background-color: red;
+		width: 75px;
+	}
+	.zone4 {
+		position: absolute;
+		top: 40px;
+		bottom: 30px;
+		left: 442px;
+		opacity: 0.1;
+		background-color: orange;
+		width: 216px;
+	}
+</style>
+</head>
+<body>
+	<div id="chart_wrapper">
+		<div id="chart_div"></div>
+		<div class="zone1"></div>
+		<div class="zone2"></div>
+		<div class="zone3"></div>
+		<div class="zone4"></div>
+	</div>
+	<script>
+		//google.load('visualization', '1.1', {packages: ['line']});
+		google.load('visualization', '1.1', {packages: ['scatter', 'line']});
+		google.setOnLoadCallback(drawChart);
+
+		function drawChart() {
+			var button = document.getElementById('change-chart');
+			var chartDiv = document.getElementById('chart_div');
+
+			var fullData = [
+			[91.77, 207.893265, 1452, 880, 44],
+			[92.69, 233.873962, 1509, 880, 45],
+			[93.62, 272.229706, 1767, 857, 47],
+			[94.54, 296.81308, 2043, 925, 45],
+			[95.46, 312.589355, 1920, 955, 47],
+			[96.39, 418.118896, 1944, 1054, 52],
+			[97.31, 466.61264, 1920, 1193, 50],
+			[98.23, 558.502014, 2426, 1244, 48],
+			[99.15, 675.569153, 2425, 1220, 45],
+			[100.08, 688.673462, 1895, 1310, 43],
+			[101, 866.322693, 1351, 1317, 44],
+			[101.92, 1061.252075, 1102, 1397, 42],
+			[102.84, 1291.158813, 1069, 1555, 43],
+			[103.76, 1366.450073, 907, 1591, 35],
+			[104.68, 1502.562256, 865, 1591, 32]
+			];
+
+			var paramToShowIndex = 2;
+			var newData = [];
+			for (var i = 0; i < fullData.length; i++) {
+				var dr = fullData[i];
+				var row = [dr[0], dr[1], dr[paramToShowIndex]];
+				newData.push(row);
+			}
+
+			var data = new google.visualization.DataTable();
+			data.addColumn('number', 'Longitude (Degrees West)');
+			data.addColumn('number', "Elevation");
+
+			if (paramToShowIndex === 2) {
+				data.addColumn('number', "Median MLCAPE");
+			} else if (paramToShowIndex === 3) {
+				data.addColumn('number', "Median LCL");
+			} else if (paramToShowIndex === 4) {
+				data.addColumn('number', "Median Effective Shear");
+			}
+
+			data.addRows(newData);
+
+			var options = {
+				chart: {
+					title: 'Tornadic Environment - Elevation vs Parameters @ Grid Row 58'
+				},
+				width: 900,
+				height: 500,
+				series: {
+          // Gives each series an axis name that matches the Y-axis below.
+          0: {axis: 'Elevation'},
+          1: {axis: 'CAPE'},
+          2: {axis: 'LCL'},
+          3: {axis: 'Shear'}
+      },
+      axes: {
+          // Adds labels to each axis; they don't have to match the axis names.
+          y: {
+          	Elevation: {label: 'Meters'},
+          	CAPE: {label: 'J/Kg'},
+          	LCL: {label: 'Meters'},
+          	Shear: {label: 'Knots'}
+          }
+      }
+  };
+
+  function drawChart() {
+  	//var chart = new google.charts.Line(chartDiv);
+  	var chart = new google.charts.Scatter(chartDiv);
+  	chart.draw(data, options);
+  }
+
+  drawChart();
+}
+</script>
+<div id="map"></div>
+<script type="text/javascript">
+	var map;
+	function initMap() {
+		map = new google.maps.Map(document.getElementById('map'), {
+			center: {lat: 40, lng: -100},
+			zoom: 6,
+			mapTypeId: google.maps.MapTypeId.TERRAIN
+		});
+
+		var top = 40.65;
+		var bottom = 39.95;
+		
+		var zone1 = [
+		{lat: top, lng: -91.31},
+		{lat: bottom, lng: -91.31},
+		{lat: bottom, lng: -93.11},
+		{lat: top, lng: -93.11}
+		];
+		var zone1poly = new google.maps.Polygon({
+			paths: zone1,
+			strokeColor: 'green',
+			strokeOpacity: 0.3,
+			strokeWeight: 2,
+			fillColor: 'green',
+			fillOpacity: 0.2
+		});
+		zone1poly.setMap(map);
+
+		var zone2 = [
+		{lat: top, lng: -93.11},
+		{lat: bottom, lng: -93.11},
+		{lat: bottom, lng: -97.72},
+		{lat: top, lng: -97.72}
+		];
+		var zone2poly = new google.maps.Polygon({
+			paths: zone2,
+			strokeColor: 'blue',
+			strokeOpacity: 0.3,
+			strokeWeight: 2,
+			fillColor: 'blue',
+			fillOpacity: 0.2
+		});
+		zone2poly.setMap(map);
+
+		var zone3 = [
+		{lat: top, lng: -97.72},
+		{lat: bottom, lng: -97.72},
+		{lat: bottom, lng: -99.69},
+		{lat: top, lng: -99.69}
+		];
+		var zone3poly = new google.maps.Polygon({
+			paths: zone3,
+			strokeColor: 'red',
+			strokeOpacity: 0.3,
+			strokeWeight: 2,
+			fillColor: 'red',
+			fillOpacity: 0.2
+		});
+		zone3poly.setMap(map);
+
+		var zone4 = [
+		{lat: top, lng: -99.69},
+		{lat: bottom, lng: -99.69},
+		{lat: bottom, lng: -105.14},
+		{lat: top, lng: -105.14}
+		];
+		var zone4poly = new google.maps.Polygon({
+			paths: zone4,
+			strokeColor: 'orange',
+			strokeOpacity: 0.3,
+			strokeWeight: 2,
+			fillColor: 'orange',
+			fillOpacity: 0.2
+		});
+		zone4poly.setMap(map);
+	}
+
+</script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?callback=initMap">
+</script>
+</body>
+</html>

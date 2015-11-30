@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+#chart_wrapper {
+      position: relative;
+    }
+  .zone1 {
+    position: absolute;
+    top: 40px;
+    bottom: 30px;
+    left: 60px;
+    opacity: 0.1;
+    background-color: green;
+    width: 131px;
+  }
+  .zone2 {
+    position: absolute;
+    top: 40px;
+    bottom: 30px;
+    left: 191px;
+    opacity: 0.1;
+    background-color: blue;
+    width: 176px;
+  }
+  .zone3 {
+    position: absolute;
+    top: 40px;
+    bottom: 30px;
+    left: 367px;
+    opacity: 0.1;
+    background-color: red;
+    width: 75px;
+  }
+  .zone4 {
+    position: absolute;
+    top: 40px;
+    bottom: 30px;
+    left: 442px;
+    opacity: 0.1;
+    background-color: orange;
+    width: 216px;
+  }
+  </style>
+  <script type="text/javascript" src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1.1','packages':['scatter']}]}"></script>
+</head>
+<body>
+  <div id="chart_wrapper" class="chart">
+    <div id="chart_div"></div>
+    <div class="zone1"></div>
+    <div class="zone2"></div>
+    <div class="zone3"></div>
+    <div class="zone4"></div>
+  </div>
+  <script>
+    google.load('visualization', '1.1', {packages: ['scatter']});
+    google.setOnLoadCallback(drawChart);
+    function drawChart() {
+      var fullData = [
+      [91.77, 207.893265, 1452, 880, 44],
+      [92.69, 233.873962, 1509, 880, 45],
+      [93.62, 272.229706, 1767, 857, 47],
+      [94.54, 296.81308, 2043, 925, 45],
+      [95.46, 312.589355, 1920, 955, 47],
+      [96.39, 418.118896, 1944, 1054, 52],
+      [97.31, 466.61264, 1920, 1193, 50],
+      [98.23, 558.502014, 2426, 1244, 48],
+      [99.15, 675.569153, 2425, 1220, 45],
+      [100.08, 688.673462, 1895, 1310, 43],
+      [101, 866.322693, 1351, 1317, 44],
+      [101.92, 1061.252075, 1102, 1397, 42],
+      [102.84, 1291.158813, 1069, 1555, 43],
+      [103.76, 1366.450073, 907, 1591, 35],
+      [104.68, 1502.562256, 865, 1591, 32]
+      ];
+      var capeChart = document.getElementById('chart_div');
+      var capeValues = [];
+      for (var i = 0; i < fullData.length; i++) {
+        var dr = fullData[i];
+        capeValues.push([dr[0], dr[1], dr[2]]);
+      }
+      var capeData = new google.visualization.DataTable();
+      capeData.addColumn('number', 'Longitude (Degrees West)');
+      capeData.addColumn('number', "Elevation");
+      capeData.addColumn('number', "Median MLCAPE");
+      capeData.addRows(capeValues);
+
+      var capeOptions = {
+        chart: {
+          title: 'Median Mixed-Layer CAPE vs Elevation @ Grid Row 58'
+        },
+        width: 900,
+        height: 500,
+        series: {
+          0: {axis: 'Elevation'},
+          1: {axis: 'CAPE'}
+        },
+        axes: {
+          y: {
+            Elevation: {label: 'Elevation (m)'},
+            CAPE: {label: 'MLCAPE (J/Kg)'}
+          }
+        }
+      };
+
+      var chart = new google.charts.Scatter(capeChart);
+      chart.draw(capeData, capeOptions);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="http://cdn.muicss.com/mui-latest/css/mui.min.css" rel="stylesheet" type="text/css" />
+  <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+  <script type="text/javascript" src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1.1','packages':['scatter']}]}"></script>
+  <script src="http://cdn.muicss.com/mui-latest/js/mui.min.js"></script>
+  <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+  <script src="script.js"></script>
+  <script async defer src="https://maps.googleapis.com/maps/api/js?callback=initMap"></script>
+</head>
+<body>
+  <div id="sidedrawer" class="mui--no-user-select">
+    <div id="sidedrawer-brand" class="mui--appbar-line-height mui--text-title">sig tor</div>
+    <div class="mui-divider"></div>
+    <ul style="display:none;">
+      <li>
+        <strong>Category 1</strong>
+        <ul>
+          <li><a href="#">Item 1</a></li>
+          <li><a href="#">Item 2</a></li>
+          <li><a href="#">Item 3</a></li>
+        </ul>
+      </li>
+      <li>
+        <strong>Category 2</strong>
+        <ul>
+          <li><a href="#">Item 1</a></li>
+          <li><a href="#">Item 2</a></li>
+          <li><a href="#">Item 3</a></li>
+        </ul>
+      </li>
+      <li>
+        <strong>Category 3</strong>
+        <ul>
+          <li><a href="#">Item 1</a></li>
+          <li><a href="#">Item 2</a></li>
+          <li><a href="#">Item 3</a></li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+  <header id="header" class="header-shadow">
+    <div class="mui-appbar mui--appbar-line-height">
+      <div class="mui-container-fluid">
+        <a class="sidedrawer-toggle mui--visible-xs-inline-block js-show-sidedrawer">☰</a>
+        <a class="sidedrawer-toggle mui--hidden-xs js-hide-sidedrawer">☰</a>
+        <span class="mui--text-title mui--visible-xs-inline-block">A Brief Analysis of SPC's Tornado Environment Data</span>
+      </div>
+    </div>
+  </header>
+  <div id="content-wrapper">
+    <div class="mui--appbar-height"></div>
+    <div class="mui-container-fluid">
+      <br>
+      <h1>A Brief Analysis of SPC's Tornado Environment Data</h1>
+      <p>It's fairly well known that tornadoes occur throughout much of the central United States, and the term "Tornado Alley" has established itself as a colloqualism. From a meteorological perspective, there isn't a rigid definition for the bounds of Tornado Alley, and there are arguments for the existence of multiple tornado alleys such as <a href="https://en.wikipedia.org/wiki/Dixie_Alley">Dixie Alley</a> in the southeast US. Regardless of the above, professional and amateur meteorologists agree that the central US from Mexico to Canada has a high number of tornadic events in relatively similar environments:</p>
+      <div class="mui-panel">
+        <img src="images/Tornado_Alley_Diagram.svg" alt="Tornado Alley" class="post-inline" />
+        <span class="credit">source: NOAA</span>
+      </div>
+      <p>"Relatively similar" has helped create some general "rules" for parameters favorable for tornadoes (when I use the word "rules" throughout the rest of this post, assume I mean the quoted version that is a stand-in for "rough guideline, and rules are made to be broken"). While it's good enough for a media narrative explaining severe weather to the general public, but anyone that has witnessed tornadoes in both Colorado on the western edge of Tornado Alley, and Missouri on the eastern edge, has noticed that the environments, and the storms, can differ quite a bit. Over the years, the weather community has ammended some of these rules with further rules:</p>
+      <div class="mui-panel">
+        <ul>
+          <li>Surface dewpoints can be lower than 60°F in upslope conditions</li>
+          <li>LCLs can be higher in upslope conditions</li>
+          <li>Instability can be lower in upslope conditions</li>
+          <li>Higher shear can compensate for lower instability in Dixie Alley</li>
+        </ul>
+      </div>
+      <p>For many years, these guidelines were passed around the weather community with primarily anecdotal evidence supporting them, ie. "I saw a tornado outside of Denver and the dews were only 53°". While not completely inaccurate, these guidelines were definitely imprecise. If you need 60° dews in Salina, and 50° dews in Denver - do you need 55° dews in Hays, KS halfway between the two cities?</p>
+      <h2>Ingesting SPC's Tornado Environment Browser Data</h2>
+      <p>Thankfully, in the last few years John Hart at the Storm Prediction Center a lot of storm environment data all across the US, and made a <a href="http://www.spc.noaa.gov/exper/envbrowser/">tornado environment browser</a>. With grid points spaced roughly every 1 degree, this data is granular enough to allow for some analysis to be done, and has some of the more useful forecasting parameters baked in:</p>
+      <div class="mui-panel">
+        <img src="images/envbw.gif" alt="Tornado Environment Parameters" class="post-inline" />
+        <span class="credit">source: Storm Prediction Center</span>
+      </div>
+      <p>Unfortunately, while the SPC makes some commonly-used data available, there isn't a huge demand for the tornado environment data, so if I wanted to use this data, I'd need to fall back to parsing it the hard way. Eventually, I'll put the source code for this up on my <a href="https://github.com/rhurkes/">GitHub</a>, but for brevity, the basic process is:</p>
+      <div class="mui-panel">
+        <ol>
+          <li>Retrieve all grid point images</li>
+          <li>Grab lat/lon values and create a map for grid X/Y values</li>
+          <li>OCR the event count (optional)</li>
+          <li>Inspect the pixel values to interpolate box/whisker data points</li>
+          <li>Query the <a href="http://nationalmap.gov/epqs/">USGS web service</a> with lat/lon to get elevation data</li>
+          <li>Throw all this data into a database (PostgreSQL will do nicely)</li>
+          <li>Create a simple API to expose these values in bulk</li>
+        </ol>
+      </div>
+      <div class="mui-panel">
+        <p>A quick sidenote, yes interpolation is not optimal! In this case, it's not too detrimental though. The MLCAPE values for example, are on a scale of 500 J/Kg across either 31 or 32 pixels, so our margin of error ends up being ~16 J/Kg - small enough to be statistically insignificant for our purposes.</p>
+      </div>
+      <p>For the grunt work listed above, I ended up using Python which made it fairly trivial. While I work on getting all the data stored and exposing it in a useful manner, I wanted to test with a single grid row and see . I picked grid row #58 stretching from the Colorado Front Range to the Mississippi River for a few reasons:</p>
+      <div class="mui-panel">
+        <ul>
+          <li>latitude is somewhat central to Tornado Alley</li>
+          <li>the row is adjacent to I-80 to hopefully minimize population bias issues</li>
+          <li>no major geographic features interrupting the row like the Buffalo Ridge, Badlands, etc.</li>
+        </ul>
+      </div>
+      <p>For visualizing this data, I've been playing with a few different charting libraries and decided to experiment with Google's <a href="https://developers.google.com/chart/">charting library</a>. I've found it to be a good blend of functionality and ease of use. It's got some nice features like trendlines and dual-Y charts, but you aren't bogged down in verbose configuration like you are with the more full-fledged libraries such as D3.js. Moving on, so what does the data look like?</p>
+      <h2>LCL Comparison</h2>
+      <div class="mui-panel light">
+        <div id="lcl_chart" class="chart"></div>
+      </div>
+      <p>Elevation and Lifted Condensation Level (LCL) are fairly linear, which makes comparisons easy. This isn't good enough for modeling convective systems on super computers, but it's great to answer the general question of "How does elevation affect LCL height?" Google's "Material" charts are currently the only ones that support dual-Y axis charts, but Material charts are beta and don't support trendlines yet (also just found out that Material charts don't support multiple instantiations, hence the iframe for later charts). We'll have to do some quick math on a piece of paper:</p>
+      <div class="mui-panel">
+        <div>Elevation linear regression: y = 102.292 * x- 9366.869</div>
+        <div>r^2 = 0.923</div>
+        <br />
+        <div>LCL linear regression: y = 62.905 * x -4981.19</div>
+        <div>r^2 = 0.964</div>
+        <br />
+        <p>It's 78 kilometers between grid points/data points, so at a base median LCL height of ~900m, and a base elevation of ~200m, for every 78km we travel west our elevation increases by ~102m, and median LCL height increases by ~62m. Let's standardize on 100km and bump everything by ~28% (which we can, since these are linear relationships).</p>
+        <strong><p>Every 100km we move west from the Mississippi River:</p>
+          <ul>
+            <li>Elevation increases by ~130m</li>
+            <li>Median LCL height increases by ~80m, or 4/5 of the distance</li>
+          </ul></strong>
+        </div>
+        <h2>MLCAPE Comparison</h2>
+        <p>We unfortunately don't have surface dewpoint data available to solve our earlier dilemma about the dewpoint in Hays, KS - but we have Median Mixed-Layer Convective Available Potential Energy, aka MLCAPE, aka "instability"...</p>
+        <div class="mui-panel light">
+          <iframe class="chart" src="cape_chart.html"></iframe>
+        </div>
+        <p>... which no longer has a nice, neat linear relationship. We potentially have a few stories here, so the data is broken out into color-tinted zones.</p>
+        <p>Zone 1 is the left-most, green-tinted area stretching roughly from the Mississippi River to central Missouri. Tornadic storms usually require a balanced blend of shear and instability, and I was a little surprised to see a median MLCAPE values of 1452, a value rather close to that of the grid point in far western Kansas (1351). I'm assuming this is a gradual transition to the "high shear/low instability" blend that seems to be common east of the Mississippi.</p>
+        <p>Zone 2 is the blue-tinted area between central MO and central KS. It has a median MLCAPE value just shy of 2000 J/Kg, and we're not seeing any lower instability requirements as we increase elevation yet.</p>
+        <p>Zone 3 is extremely odd upon inspection. Zone 1 and Zone 2 were essentially as expected, however I thought Zone 2 would gradually transition into the upslope regime. Instead, median MLCAPE values jump from ~2000 J/Kg to ~2500 J/Kg for a short (167km) distance. If this isn't a data anomaly, my only thought would be that perhaps the slope increase around -100° longitude is pooling moisture.</p>
+        <p>Zone 4 is what I expected to see - starting around -100° (the line straight up off the eastern edge of the Texas Panhandle), median MLCAPE is inversely proportionate to elevation starting with a steep drop off of 1900 J/Kg down to just shy of 900 J/Kg. This eyeballs out to about ~200 J/Kg per 1° or 85km.</p>
+        <p>Below is a color-coded map of these four zones and the areas we're talking about:
+        <div class="mui-panel">
+          <div id="map"></div>
+        </div>
+        <h2>Summary</h2>
+        <p>So far, digging through the Tornado Environment Data hasn't led to any revolutionary new theories, but I didn't expect it to. I'm happy that I can finally use more than anecdotal evidence to tack on some new "rules":</p>
+        <div class="mui-panel">
+          <ul>
+            <li>There is a gradual elevation increase from the Mississippi River all the way to the front range that is close to 130m / 100km</li>
+            <li>Along with the gradual elevation increase, there is a gradual lessening dependence on low LCLs as you move west - in the neighborhood of 80m / 100km</li>
+            <li>Once in upslope regime, tornadic storms require 200 J/Kg less MLCAPE every 85km</li>
+            <li>Upslope regime kicks in around -100° longitude</li>
+          </ul>
+        </div>
+        <p>Keep checking back, as I still need to finish ingesting this data to investigate whether any of this data was anomalous, how the Mississippi River transition looks, dig around looking for other relationships, and eventually use this data real-time to help pick which cell will most likely be tornadic when confronted with multiple choices.</p>
+        <p>Thoughts, corrections, questions, or whatever - feel free to contact me on <a href="https://twitter.com/rhurkes/">Twitter</a>, or email me at &lt;first initial&gt;&lt;last name&gt;@gmail.com
+      </div>
+    </div>
+    <footer id="footer">
+      <div class="mui-container-fluid">
+        <br>
+        copyright © 2015 rob hurkes
+      </div>
+    </footer>
+</body>
+</html>
