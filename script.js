@@ -1,3 +1,5 @@
+var displayType, header, headerWrapper;
+
 var peekabooConfig = {
   'header': {
     'mobile': 72,
@@ -11,11 +13,9 @@ var peekabooConfig = {
   }
 };
 
-var display;
-
 var defineDisplay = function() {
   console.log('defineDisplay');
-  display = 'default';
+  displayType = 'default';
 };
 
 /* EVENTS */
@@ -24,7 +24,17 @@ window.addEventListener('resize', function() {
 });
 
 window.addEventListener('scroll', function() {
-  console.log(window.scrollY);
+  if (window.scrollY > peekabooConfig['header'][displayType]) {
+    header.classList.add('peekaboo');
+  } else {
+    header.classList.remove('peekaboo');
+  }
+
+  if (window.scrollY > peekabooConfig['header-wrapper'][displayType]) {
+    headerWrapper.classList.add('peekaboo');
+  } else {
+    headerWrapper.classList.remove('peekaboo');
+  }
 });
 
 function ready(fn) {
@@ -37,6 +47,8 @@ function ready(fn) {
 
 ready(function() {
   defineDisplay();
+  header = document.getElementById('header');
+  headerWrapper = document.getElementById('header-wrapper');
 });
 
 // Chart stuff
