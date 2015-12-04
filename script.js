@@ -1,5 +1,4 @@
 //TODO IIFE
-// TODO prevent scrolling while uimask visible
 var displayType, header, fauxHeader, headerWrapper, menuButton, uimask, sideNav;
 
 header = document.getElementById('header');
@@ -23,7 +22,6 @@ var peekabooConfig = {
 };
 
 var defineDisplay = function() {
-  console.log('defineDisplay');
   displayType = 'default';
 };
 
@@ -32,14 +30,18 @@ window.addEventListener('resize', function() {
   defineDisplay();
 });
 
-menuButton.addEventListener('click', function() {
+var toggleDrawer = function() {
   uimask.classList.toggle('visible');
   sideNav.classList.toggle('visible');
+  document.body.classList.toggle('disable-scrolling');
+};
+
+menuButton.addEventListener('click', function() {
+  toggleDrawer();
 });
 
 uimask.addEventListener('click', function() {
-  uimask.classList.toggle('visible');
-  sideNav.classList.toggle('visible');
+  toggleDrawer();
 });
 
 window.addEventListener('scroll', function() {

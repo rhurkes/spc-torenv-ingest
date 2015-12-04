@@ -5,6 +5,10 @@ img,legend{border:0}legend,td,th{padding:0}html{font-family:sans-serif;-ms-text-
   box-sizing: border-box;
 }
 
+html {
+  overflow-x: hidden; /* prevents scrollbar from affecting width */
+}
+
 /* FONTS */
 html, body {
   font-family: 'Roboto', sans-serif;
@@ -26,10 +30,6 @@ html, body {
 
 #footer, #header, #sidedrawer {
   background-color: #f44336;
-}
-
-.mui-panel {
-  background-color: #fff;
 }
 
 /* GLOBALS */
@@ -101,17 +101,6 @@ img.post-inline {
   width: 1160px;
 }
 
-/*nav {
-  width: 240px;
-  border-right: 1px solid rgba(0,0,0,0.14);
-  bottom: 0;
-  background: #fff;
-  color: #333;
-  left: 0;
-  position: fixed;
-  top: 0;
-}*/
-
 button {
   background: transparent center center no-repeat;
   background-size: 24px 24px;
@@ -141,6 +130,11 @@ header {
   font-size: 18px;
   line-height: 64px;
   width: 100%;
+}
+#header-title h1 {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 #footer {
@@ -184,15 +178,47 @@ header {
   visibility: visible;
 }
 
+.disable-scrolling {
+  overflow-y: hidden;
+  position: fixed;
+}
+
 #side-nav {
-  display: none;
   position: fixed;
   z-index: 4;
   background-color: #fff;
   top: 0;
   bottom: 0;
   width: 240px;
+  left: -240px;
+  transition: .25s;
+  border-right: 1px solid rgba(0,0,0,0.14);
 }
 #side-nav.visible {
-  display: block;
+  transition: .25s;
+  left: 0;
+}
+@media (min-width: 1480px) {
+  #header-wrapper, #content-wrapper, footer {
+    padding-left: 240px;
+  }
+  #side-nav {
+    left: 0;
+  }
+}
+
+#logo {
+  height: 64px;
+  border-bottom: 1px solid #e0e0e0;
+}
+#legal {
+  border-top: 1px solid #e0e0e0;
+  bottom: 0;
+  color: #212121;
+  font-size: 13px;
+  height: 96px;
+  line-height: 24px;
+  padding: 24px;
+  position: absolute;
+  width: 100%;
 }
