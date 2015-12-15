@@ -1,12 +1,11 @@
 //TODO IIFE
-var displayType, header, fauxHeader, headerWrapper, menuButton, uimask, sideNav;
-
-header = document.getElementById('header');
-headerWrapper = document.getElementById('header-wrapper');
-fauxHeader = document.getElementById('fauxheader');
-menuButton = document.getElementById('menu-button');
-uimask = document.getElementById('uimask');
-sideNav = document.getElementById('side-nav');
+var displayType;
+var header = document.getElementById('header');
+var headerWrapper = document.getElementById('header-wrapper');
+var fauxHeader = document.getElementById('fauxheader');
+var menuButton = document.getElementById('menu-button');
+var uimask = document.getElementById('uimask');
+var sideNav = document.getElementById('side-nav');
 
 var peekabooConfig = {
   'header': {
@@ -34,6 +33,7 @@ var toggleDrawer = function() {
   uimask.classList.toggle('visible');
   sideNav.classList.toggle('visible');
   document.body.classList.toggle('disable-scrolling');
+  document.documentElement.classList.toggle('disable-scrolling');
 };
 
 menuButton.addEventListener('click', function() {

@@ -8,10 +8,16 @@ img,legend{border:0}legend,td,th{padding:0}html{font-family:sans-serif;-ms-text-
 html {
   overflow-x: hidden; /* prevents scrollbar from affecting width */
 }
+body {
+  width: 100%;
+}
 
 /* FONTS */
 html, body {
   font-family: 'Roboto', sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.1px;
+  line-height: 24px;
 }
 span.credit {
   font-style: italic;
@@ -25,7 +31,7 @@ html, body, input, textarea, buttons {
 /* COLORS */
 html, body {
   background-color: #fff;
-  color: #000;
+  color: #212121;
 }
 
 #footer, #header, #sidedrawer {
@@ -61,6 +67,11 @@ p {
     margin: 0 0 10px;
 }
 
+#header-wrapper h1 {
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
 /* PEEKABOO */
 header#fauxheader {
   display: none;
@@ -76,8 +87,20 @@ header#fauxheader.peekaboo {
   z-index: 1;
   position: fixed;
 }
+#header-wrapper.peekaboo {
+  left: 72px;
+  right: 72px;
+  top: 0px;
+  z-index: 2;
+  position: fixed;
+}
 #header-wrapper.peekaboo h1 {
   font-size: 18px;
+}
+@media (max-width: 767px) {
+  #header-wrapper h1 {
+    font-size: 24px;
+  }
 }
 
 body {
@@ -97,7 +120,8 @@ img.post-inline {
  */
 
 #content-wrapper {
-  margin: 60px auto auto auto;
+  padding-top: 60px;
+  margin: 0 auto;
   width: 1160px;
 }
 
@@ -120,21 +144,16 @@ header {
 }
 #header-wrapper {
   height: 64px;
-  min-height: 64px;
-  left: 72px;
-  right: 72px;
-  top: 0;
-  position: fixed;
 }
 #header-title {
-  font-size: 18px;
-  line-height: 64px;
-  width: 100%;
-}
-#header-title h1 {
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  color: #FFF;
+  font-size: 56px;
+  font-weight: 400;
+  line-height: 1.5;
+  margin: 0px auto;
   overflow: hidden;
+  width: 1160px;
+  white-space: nowrap;
 }
 
 #footer {
@@ -179,8 +198,7 @@ header {
 }
 
 .disable-scrolling {
-  overflow-y: hidden;
-  position: fixed;
+  overflow: hidden;
 }
 
 #side-nav {
@@ -221,4 +239,41 @@ header {
   padding: 24px;
   position: absolute;
   width: 100%;
+}
+
+.card {
+  border-radius: 2px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.26);
+  padding: 12px 12px 18px 12px;
+  margin-bottom: 18px;
+}
+
+#content-wrapper {
+  width: 1160px;
+  margin: 0 auto;
+}
+@media (max-width: 1240px) {
+  #content-wrapper {
+    width: 760px;
+  }
+}
+@media (max-width: 760px) {
+  #content-wrapper {
+    width: 360px;
+  }
+}
+@media (max-width: 360px) {
+  #content-wrapper {
+    width: 100%;
+  }
+}
+
+#menu-button {
+  left: 12px;
+}
+
+.material-spec-icon {
+  color: rgba(0, 0, 0, 0.5);
+  width: 24px;
+  vertical-align: middle;
 }
